@@ -383,3 +383,6 @@ set mouse=r
 
 " <Ctrl-l> redraws the screen and removes any search highlighting.
 nnoremap <silent> <C-l> :nohl<CR><C-l>
+
+:set listchars=tab:>-,trail:~,extends:>,precedes:<
+:set list
