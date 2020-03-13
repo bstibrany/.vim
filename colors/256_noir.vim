@@ -1,24 +1,21 @@
 "  Vim color file
-"    Name:256_noir.vim
-"    Maintainer: Andreas van Cranenburgh <andreas@unstable.nl>
-"    Homepage:https://github.com/andreasvc/vim-256noir/
 "
-"    Basically: dark background, numerals & errors red,
-"    rest different shades of gray.
+"  Taken from Andreas van Cranenburgh <andreas@unstable.nl> (https://github.com/andreasvc/vim-256noir/)
 "
-"    colors 232--250 are shades of gray, from dark to light;
-"    16=black, 255=white, 196=red, 88=darkred.
-
+"  colors 232--250 are shades of gray, from dark to light;
+"  16=black, 255=white, 196=red, 88=darkred.
 
 highlight clear
 set background=dark
+
 if version > 580
-      " no guarantees for version 5.8 and below, but this makes it stop
-      " complaining
+    " no guarantees for version 5.8 and below, but this makes it stop
+    " complaining
     if exists( syntax_on )
         syntax reset
     endif
 endif
+
 let g:colors_name = "256_noir"
 
 if has("gui_running") || &t_Co == 256

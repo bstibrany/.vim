@@ -1,10 +1,17 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Ben Stibrany's .vimrc
+" Benjamin Stibrany's .vimrc
 "
-" Started off with Amir Salihefendic's basic setup
+" Started off with Amir Salihefendic's 'basic' setup
 " -- https://github.com/amix/vimrc
 "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Plugins                                                  "
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" seem to be a bit busted right now, need to reevaluate these.
 
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
@@ -14,46 +21,46 @@ endif
 
 call plug#begin('~/.vim/plugged')
 
-Plug 'rhysd/vim-clang-format'
-Plug 'valloric/youcompleteme'
+Plug 'scrooloose/nerdtree' " directory view
+Plug 'ctrlpvim/ctrlp.vim' " fuzzy find files
 
 call plug#end()
 
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => General
+" => General                                                  "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Sets how many lines of history VIM has to remember
+" Sets how many lines of history VIM has to remember.
 set history=500
 
 " Enable filetype plugins
 filetype plugin on
 filetype indent on
 
-" Set to auto read when a file is changed from the outside
+" Set to auto read when a file is changed from the outside.
 set autoread
 
-" Prevent space from advancing the cursor
+" Prevent space from advancing the cursor.
 nnoremap <SPACE> <Nop>
 
-" With a map leader it's possible to do extra key combinations
-" like <leader>w saves the current file
+" Map space as 'leader' key for convenient grips.
 let mapleader = ' '
 
-" Fast saving
+" Fast saving.
 nmap <leader>w :w!<cr>
-" Fast quitting
+" Fast quitting.
 nmap <leader>q :q<cr>
 
+
+" -- not sure what this is
 " :W sudo saves the file
 " (useful for handling the permission-denied error)
-command W w !sudo tee % > /dev/null
+" command W w !sudo tee % > /dev/null
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Set 7 lines to the cursor - when moving vertically using j/k
-set so=7
 
 " Avoid garbled characters in Chinese language windows OS
 let $LANG='en'
@@ -78,7 +85,7 @@ set ruler
 " Height of the command bar
 set cmdheight=2
 
-" A buffer becomes hidden when it is abandoned
+" This is recommended but I don't think I use it
 set hid
 
 " Configure backspace so it acts as it should act
@@ -106,7 +113,7 @@ set magic
 " Show matching brackets when text indicator is over them
 set showmatch
 " How many tenths of a second to blink when matching brackets
-set mat=1
+set mat=2
 
 " No annoying sound on errors
 set noerrorbells
@@ -119,9 +126,15 @@ if has("gui_macvim")
     autocmd GUIEnter * set vb t_vb=
 endif
 
-
 " Add a bit extra margin to the left
-set foldcolumn=1
+set foldcolumn=2
+
+" Display current line number and relative numbers for all others.
+set relativenumber
+set number
+
+" Cursor blinking & cursor is always a block.
+set guicursor=a:blinkwait100-blinkon400-blinkoff300-block-Cursor
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -136,6 +149,7 @@ if $COLORTERM == 'gnome-terminal'
 endif
 
 try
+    " Use 256_noir colorscheme (defined in seperate file)
     colorscheme 256_noir
     " Change highlighting of cursor line when entering/leaving Insert Mode
     set cursorline
@@ -148,7 +162,7 @@ endtry
 
 set background=dark
 
-" Set extra options when running in GUI mode
+" Set extra options when running in GUI mode -- TODO what is this?
 if has("gui_running")
     set guioptions-=T
     set guioptions-=e
@@ -156,25 +170,26 @@ if has("gui_running")
     set guitablabel=%M\ %t
 endif
 
-" Set utf8 as standard encoding and en_US as the standard language
+" Set utf8 as standard encoding and en_US as the standard language.
 set encoding=utf8
 
-" Use Unix as the standard file type
+" Use Unix as the standard file type.
 set ffs=unix,dos,mac
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Files, backups and undo
+" => Files, backups and undo                                  "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Turn backup off, since most stuff is in SVN, git et.c anyway...
+" Turn backup off, since most stuff is in SVN, git et.c anyway.
 set nobackup
 set nowb
 set noswapfile
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Text, tab and indent related
+" => Text, tab and indent related                             "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 " Use spaces instead of tabs
 set expandtab
 
@@ -185,59 +200,70 @@ set smarttab
 set shiftwidth=2
 set tabstop=2
 
-" Linebreak on 500 characters
-set lbr
-set tw=500
+" Linebreak on 500 characters -- I think this actually just gets in the way when using vim.
+" set lbr
+" set tw=500
 
-set ai "Auto indent
-set si "Smart indent
-set wrap "Wrap lines
+set ai "Auto indent.
+set si "Smart indent.
+set wrap "Wrap lines.
+
+" Show invisibles: spaces and tabs in places they shouldn't be will show up.
+:set listchars=tab:>-,trail:~,extends:>,precedes:<
+:set list
 
 
-""""""""""""""""""""""""""""""
-" => Visual mode related
-""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Visual mode related                                  "
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 " Visual mode pressing * or # searches for the current selection
 " Super useful! From an idea by Michael Naumann
 vnoremap <silent> * :<C-u>call VisualSelection('', '')<CR>/<C-R>=@/<CR><CR>
 vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
 
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Moving around, tabs, windows and buffers
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" Disable highlight when <leader><cr> is pressed
+" Disable highlight when <leader><cr> is pressed.
 map <silent> <leader><cr> :noh<cr>
 
-" Smart way to move between windows
-map <C-j> <C-W>j
-map <C-k> <C-W>k
-map <C-h> <C-W>h
-map <C-l> <C-W>l
 
-" Close the current buffer
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Moving around, tabs, windows and buffers             "
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Smart way to move between windows -- TODO Haven't looked at this.
+" map <C-j> <C-W>j
+" map <C-k> <C-W>k
+" map <C-h> <C-W>h
+" map <C-l> <C-W>l
+
+" Open Nerdtree.
+nmap <C-n> :NERDTreeToggle<CR>
+map <leader>n :NERDTreeToggle<CR>
+
+" Close the current buffer.
 map <leader>bd :Bclose<cr>:tabclose<cr>gT
 
-" Close all the buffers
+" Close all the buffers.
 map <leader>ba :bufdo bd<cr>
 
-"map <leader>l :bnext<cr>
-"map <leader>h :bprevious<cr>
-
-" Useful mappings for managing tabs
+" Useful mappings for managing tabs.
 map <leader>tn :tabnew<cr>
 map <leader>to :tabonly<cr>
 map <leader>tc :tabclose<cr>
 map <leader>tm :tabmove
-map <leader>h :tabprev<cr>
-map <leader>l :tabnext<cr>
+map <C-h> :tabprev<cr>
+map <C-l> :tabnext<cr>
+
+" Mappings for managing windows.
+map <leader>h <C-w>h<cr>
+map <leader>j <C-w>j<cr>
+map <leader>k <C-w>k<cr>
+map <leader>l <C-w>l<cr>
 
 " Let 'tl' toggle between this and the last accessed tab
 let g:lasttab = 1
 nmap <Leader>tl :exe "tabn ".g:lasttab<CR>
 au TabLeave * let g:lasttab = tabpagenr()
-
 
 " Opens a new tab with the current buffer's path
 " Super useful when editing files in the same directory
@@ -256,6 +282,9 @@ endtry
 " Return to last edit position when opening files (You want this!)
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
+" Use ctr+p plugin with leader+p
+map <leader>p <C-p>
+
 
 """"""""""""""""""""""""""""""
 " => Status line
@@ -270,10 +299,10 @@ set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Editing mappings
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Remap VIM 0 to first non-blank character
+" Remap VIM 0 to first non-blank character -- TODO ?
 map 0 ^
 
-" Move a line of text using ALT+[jk] or Command+[jk] on mac -- doesn't seem to work
+" Move a line of text using ALT+[jk] or Command+[jk] on mac -- TODO doesn't seem to work, would be nice
 nmap <M-j> mz:m+<cr>`z
 nmap <M-k> mz:m-2<cr>`z
 vmap <M-j> :m'>+<cr>`<my`>mzgv`yo`z
@@ -286,7 +315,7 @@ if has("mac") || has("macunix")
   vmap <D-k> <M-k>
 endif
 
-" Delete trailing white space on save, useful for some filetypes ;)
+" Delete trailing white space on save, useful for some filetypes.
 fun! CleanExtraSpaces()
     let save_cursor = getpos(".")
     let old_query = getreg('/')
@@ -296,12 +325,12 @@ fun! CleanExtraSpaces()
 endfun
 
 if has("autocmd")
-    autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh,*.coffee,*.c,*.cpp,*.h,*.java :call CleanExtraSpaces()
+    autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh,*.coffee,*.c,*.cpp,*.h,*.java,*.m,*.tex :call CleanExtraSpaces()
 endif
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Spell checking
+" => Spell checking                                           "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Pressing ,ss will toggle and untoggle spell checking
 map <leader>ss :setlocal spell!<cr>
@@ -314,7 +343,7 @@ map <leader>s? z=
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Misc
+" => Misc                                                     "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Remove the Windows ^M - when the encodings gets messed up
 noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
@@ -330,9 +359,9 @@ map <leader>pp :setlocal paste!<cr>
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Helper functions
+" => Helper functions                                         "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Returns true if paste mode is enabled
+" Returns true if paste mode is enabled.
 function! HasPaste()
     if &paste
         return 'PASTE MODE  '
@@ -340,7 +369,7 @@ function! HasPaste()
     return ''
 endfunction
 
-" Don't close window, when deleting a buffer
+" Don't close window when deleting a buffer.
 command! Bclose call <SID>BufcloseCloseIt()
 function! <SID>BufcloseCloseIt()
     let l:currentBufNum = bufnr("%")
@@ -382,14 +411,4 @@ function! VisualSelection(direction, extra_filter) range
     let @" = l:saved_reg
 endfunction
 
-set relativenumber
-set number
-
-set mouse=r
-
-" <Ctrl-l> redraws the screen and removes any search highlighting.
-nnoremap <silent> <C-l> :nohl<CR><C-l>
-
-" Show invisibles
-:set listchars=tab:>-,trail:~,extends:>,precedes:<
-:set list
+set mouse=r " TODO ?
