@@ -11,21 +11,34 @@
 " => Plugins                                                  "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" seem to be a bit busted right now, need to reevaluate these.
-
+" Install plug
 if empty(glob('~/.vim/autoload/plug.vim'))
-  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
-    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+    silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+        \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
 call plug#begin('~/.vim/plugged')
 
-Plug 'scrooloose/nerdtree' " directory view
-Plug 'ctrlpvim/ctrlp.vim' " fuzzy find files
+" Lightweight language support
+Plug 'sheerun/vim-polyglot'
+
+" Colour scheme
+Plug 'morhetz/gruvbox'
+
+" eslint
+Plug 'eslint/eslint'
+
+" JS code completion
+Plug 'prettier/vim-prettier'
+
+" Fuzzy finder
+Plug 'kien/ctrlp.vim'
+
+" Distraction-free view
+Plug 'junegunn/goyo.vim'
 
 call plug#end()
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General                                                  "
@@ -52,21 +65,9 @@ nmap <leader>w :w!<cr>
 nmap <leader>q :q<cr>
 
 
-" -- not sure what this is
-" :W sudo saves the file
-" (useful for handling the permission-denied error)
-" command W w !sudo tee % > /dev/null
-
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" Avoid garbled characters in Chinese language windows OS
-let $LANG='en'
-set langmenu=en
-source $VIMRUNTIME/delmenu.vim
-source $VIMRUNTIME/menu.vim
 
 " Turn on the Wild menu
 set wildmenu
@@ -84,9 +85,6 @@ set ruler
 
 " Height of the command bar
 set cmdheight=2
-
-" This is recommended but I don't think I use it
-set hid
 
 " Configure backspace so it acts as it should act
 set backspace=eol,start,indent
@@ -121,11 +119,6 @@ set novisualbell
 set t_vb=
 set tm=500
 
-" Properly disable sound on errors on MacVim
-if has("gui_macvim")
-    autocmd GUIEnter * set vb t_vb=
-endif
-
 " Add a bit extra margin to the left
 set foldcolumn=2
 
@@ -148,27 +141,11 @@ if $COLORTERM == 'gnome-terminal'
     set t_Co=256
 endif
 
-try
-    " Use 256_noir colorscheme (defined in seperate file)
-    colorscheme 256_noir
-    " Change highlighting of cursor line when entering/leaving Insert Mode
-    set cursorline
-    highlight CursorLine cterm=NONE ctermfg=NONE ctermbg=233 guifg=NONE guibg=#121212
-    autocmd InsertEnter * highlight CursorLine cterm=NONE ctermfg=NONE ctermbg=234 guifg=NONE guibg=#1c1c1c
-    autocmd InsertLeave * highlight CursorLine cterm=NONE ctermfg=NONE ctermbg=233 guifg=NONE guibg=#121212
-catch
-    colorscheme murphy
-endtry
+" Use gruvbox colour scheme
+let g:gruvbox_italic=1 " enable italics
+autocmd vimenter * colorscheme gruvbox
 
 set background=dark
-
-" Set extra options when running in GUI mode -- TODO what is this?
-if has("gui_running")
-    set guioptions-=T
-    set guioptions-=e
-    set t_Co=256
-    set guitablabel=%M\ %t
-endif
 
 " Set utf8 as standard encoding and en_US as the standard language.
 set encoding=utf8
@@ -197,12 +174,8 @@ set expandtab
 set smarttab
 
 " 1 tab == 4 spaces
-set shiftwidth=2
-set tabstop=2
-
-" Linebreak on 500 characters -- I think this actually just gets in the way when using vim.
-" set lbr
-" set tw=500
+set shiftwidth=4
+set tabstop=4
 
 set ai "Auto indent.
 set si "Smart indent.
@@ -220,7 +193,6 @@ set wrap "Wrap lines.
 " Visual mode pressing * or # searches for the current selection
 " Super useful! From an idea by Michael Naumann
 vnoremap <silent> * :<C-u>call VisualSelection('', '')<CR>/<C-R>=@/<CR><CR>
-vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
 
 " Disable highlight when <leader><cr> is pressed.
 map <silent> <leader><cr> :noh<cr>
@@ -229,16 +201,6 @@ map <silent> <leader><cr> :noh<cr>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Moving around, tabs, windows and buffers             "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" Smart way to move between windows -- TODO Haven't looked at this.
-" map <C-j> <C-W>j
-" map <C-k> <C-W>k
-" map <C-h> <C-W>h
-" map <C-l> <C-W>l
-
-" Open Nerdtree.
-nmap <C-n> :NERDTreeToggle<CR>
-map <leader>n :NERDTreeToggle<CR>
 
 " Close the current buffer.
 map <leader>bd :Bclose<cr>:tabclose<cr>gT
@@ -282,9 +244,6 @@ endtry
 " Return to last edit position when opening files (You want this!)
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
-" Use ctr+p plugin with leader+p
-map <leader>p <C-p>
-
 
 """"""""""""""""""""""""""""""
 " => Status line
@@ -307,13 +266,6 @@ nmap <M-j> mz:m+<cr>`z
 nmap <M-k> mz:m-2<cr>`z
 vmap <M-j> :m'>+<cr>`<my`>mzgv`yo`z
 vmap <M-k> :m'<-2<cr>`>my`<mzgv`yo`z
-
-if has("mac") || has("macunix")
-  nmap <D-j> <M-j>
-  nmap <D-k> <M-k>
-  vmap <D-j> <M-j>
-  vmap <D-k> <M-k>
-endif
 
 " Delete trailing white space on save, useful for some filetypes.
 fun! CleanExtraSpaces()
@@ -343,19 +295,10 @@ map <leader>s? z=
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Misc                                                     "
+" => Linting and language support                             "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Remove the Windows ^M - when the encodings gets messed up
-noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
 
-" Quickly open a buffer for scribble
-map <leader>pq :e ~/buffer<cr>
 
-" Quickly open a markdown buffer for scribble
-map <leader>x :e ~/buffer.md<cr>
-
-" Toggle paste mode on and off
-map <leader>pp :setlocal paste!<cr>
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -411,4 +354,3 @@ function! VisualSelection(direction, extra_filter) range
     let @" = l:saved_reg
 endfunction
 
-set mouse=r " TODO ?
