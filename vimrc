@@ -38,6 +38,9 @@ Plug 'kien/ctrlp.vim'
 " Distraction-free view
 Plug 'junegunn/goyo.vim'
 
+" Python code formatting
+Plug 'psf/black'
+
 call plug#end()
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
