@@ -20,26 +20,15 @@ endif
 
 call plug#begin('~/.vim/plugged')
 
-" Lightweight language support
-Plug 'sheerun/vim-polyglot'
-
-" Colour scheme
-Plug 'morhetz/gruvbox'
-
 " eslint
 Plug 'eslint/eslint'
-
-" JS code completion
-Plug 'prettier/vim-prettier'
+Plug 'dense-analysis/ale'
 
 " Fuzzy finder
 Plug 'kien/ctrlp.vim'
 
 " Distraction-free view
 Plug 'junegunn/goyo.vim'
-
-" Python code formatting
-Plug 'psf/black'
 
 call plug#end()
 
@@ -59,7 +48,6 @@ set autoread
 " Prevent space from advancing the cursor.
 nnoremap <SPACE> <Nop>
 
-" Map space as 'leader' key for convenient grips.
 let mapleader = ' '
 
 " Fast saving.
@@ -71,7 +59,6 @@ nmap <leader>q :q<cr>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 " Turn on the Wild menu
 set wildmenu
 
@@ -144,10 +131,6 @@ if $COLORTERM == 'gnome-terminal'
     set t_Co=256
 endif
 
-" Use gruvbox colour scheme
-let g:gruvbox_italic=1 " enable italics
-autocmd vimenter * colorscheme gruvbox
-
 set background=dark
 
 " Set utf8 as standard encoding and en_US as the standard language.
@@ -169,7 +152,6 @@ set noswapfile
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Text, tab and indent related                             "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 " Use spaces instead of tabs
 set expandtab
 
@@ -300,9 +282,32 @@ map <leader>s? z=
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Linting and language support                             "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:jsx_ext_required = 0
 
+let g:ale_linters = {
+\   'javascript': ['eslint'],
+\}
 
+let g:ale_fixers = {
+\   'javascript': ['eslint'],
+\   '*': ['remove_trailing_lines', 'trim_whitespace'],
+\}
 
+let g:ale_sign_error = '✘'
+let g:ale_sign_warning = '⚠'
+let g:ale_lint_on_enter = 0
+let g:ale_lint_on_text_changed = 'never'
+highlight ALEErrorSign ctermbg=NONE ctermfg=red
+highlight ALEWarningSign ctermbg=NONE ctermfg=yellow
+highlight SignColumn ctermbg=NONE
+highlight FoldColumn ctermbg=NONE
+let g:ale_linters_explicit = 1
+let g:ale_lint_on_save = 1
+let g:ale_fix_on_save = 1
+" let g:ale_javascript_prettier_options = '--no-semi --single-quote --trailing-comma none'
+
+let g:ale_sign_column_always = 1
+set signcolumn=yes
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Helper functions                                         "
@@ -356,4 +361,3 @@ function! VisualSelection(direction, extra_filter) range
     let @/ = l:pattern
     let @" = l:saved_reg
 endfunction
-
